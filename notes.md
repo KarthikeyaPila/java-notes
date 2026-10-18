@@ -387,9 +387,7 @@ class Solution {
                     currStreak++;
                 }
 
-                if(currStreak > streak) {
-                    streak = currStreak; 
-                }
+                currStreak = Integer.max(currStreak, streak);
             }
         }
 
@@ -968,6 +966,382 @@ class Solution {
         res.add(sb.toString());
         
         return res; 
+    }
+}
+```
+
+# Two pointer: 
+
+```java
+// Trapping rain water
+// You are given an array of non-negative integers height which represent an elevation map. Each value height[i] represents the height of a bar, which has a width of 1.
+// Return the total amount of water that can be trapped between the bars.
+
+class Solution {
+    public int trap(int[] height) {
+        if(height == null || height.length < 3) {
+            return 0;
+        }
+        
+        int l = 0;
+        int r = height.length - 1;
+        int lmax = 0;
+        int rMax = 0;
+        int water = 0;
+
+        while(l < r) {
+            
+            if(height[l] < height[r]) {
+                if(height[l] >= lmax) {
+                    lmax = height[l];
+                } else {
+                    water += lmax - height[l]; 
+                }
+                l++;
+            } else {
+                if (height[r] >= rMax) {
+                    rMax = height[r]; 
+                } else {
+                    water += rMax - height[r];
+                }
+                r--;
+            }
+        }
+
+        return water;
+    }
+}
+```
+
+```java
+//Container with Most Water
+// You are given an integer array heights where heights[i] represents the height of the ithith bar.
+// You may choose any two bars to form a container. Return the maximum amount of water a container can store.
+
+class Solution {
+    public int maxArea(int[] heights) {
+        int left = 0; 
+        int right = heights.length-1; 
+        int res = 0;
+
+        while(left < right) {
+            int water = (right - left) * Math.min(heights[left], heights[right]);
+            if(water > res) {
+                res = water;
+            }
+
+            if(heights[left] <= heights[right]) {
+                left++;
+            } else {
+                right--; 
+            }
+        }
+
+        return res;
+    }
+}
+```
+
+```java
+// 3 sum
+// Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] where nums[i] + nums[j] + nums[k] == 0, and the indices i, j and k are all distinct.
+// The output should not contain any duplicate triplets. You may return the output and the triplets in any order.
+
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        
+        Arrays.sort(nums); // the array is sorted.
+
+        for (int i = 0; i < nums.length; i++) {
+            if (i > 0 && nums[i] == nums[i-1]) {
+                continue; // skip duplicates. 
+            }
+            
+            int j = i+1;
+            int k = nums.length-1;
+
+            while (j < k) {
+                int total = nums[i] + nums[j] + nums[k];
+
+                if (total > 0) {
+                    k--;
+                } else if (total < 0) {
+                    j++;
+                } else {
+                    res.add(Arrays.asList(nums[i], nums[j], nums[k]));
+                    j++;
+
+                    while (nums[j] == nums[j-1] && j < k) {
+                        j++;
+                    }
+                }
+            }
+        }
+        return res;        
+    }
+}
+
+```
+
+```java
+// Two Integer Sum 2
+// Given an array of integers numbers that is sorted in non-decreasing order.
+// Return the indices (1-indexed) of two numbers, [index1, index2], such that they add up to a given target number target and index1 < index2. Note that index1 and index2 cannot be equal, therefore you may not use the same element twice.
+// There will always be exactly one valid solution.
+// Your solution must use O(1)O(1) additional space.
+
+class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+        int left = 0;
+        int right = numbers.length-1;
+        
+        while(left < right) {
+            int sum = numbers[left] + numbers[right];
+            if(sum == target) {
+                return new int[] { left+1, right+1 };
+            } else if (sum < target) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+        
+        return new int[] {};
+    }
+}
+```
+
+```java
+// Best Time to Buy and Sell Stock
+
+// You are given an integer array prices where prices[i] is the price of NeetCoin on the ith day.
+// You may choose a single day to buy one NeetCoin and choose a different day in the future to sell it.
+// Return the maximum profit you can achieve. You may choose to not make any transactions, in which case the profit would be 0.
+
+class Solution {
+    public int maxProfit(int[] prices) {
+        if (prices == null || prices.length < 2) {
+            return 0;
+        }
+
+        int[] lmin = new int[2];
+        lmin[0] = 0;                 
+        lmin[1] = prices[0];
+
+        //lmin[0] => index
+        //lmin[1] => price
+        
+        int maxProfit = 0;
+
+        for (int i=1; i<prices.length; i++) {
+            if (prices[i] < lmin[1]) {
+                lmin[0] = i;
+                lmin[1] = prices[i];
+            } 
+            else if (prices[i]-lmin[1] > maxProfit) {
+                maxProfit = prices[i] - lmin[1];
+            }
+        }
+
+        return maxProfit;
+    }
+}
+
+
+class Solution {
+    public int maxProfit(int[] prices) {
+        int maxp=0;
+        int minbuy=prices[0];
+
+        for(int sell:prices){
+            maxp=Math.max(maxp,sell-minbuy);
+            minbuy=Math.min(minbuy,sell);
+        }
+        return maxp;
+    }
+}
+
+class Solution {
+    public int maxProfit(int[] prices) {
+        int maxProfit = 0;
+        int buyPrice = Integer.MAX_VALUE;
+
+        for (int i = 0; i < prices.length; i++) {
+            if (prices[i] < buyPrice) {
+                buyPrice = prices[i];
+            } else {
+                maxProfit = Math.max(maxProfit, prices[i] - buyPrice);
+            }   
+        }
+        return maxProfit;
+    }
+}
+
+```
+
+# Stack
+- it's a LIFO following data structure.
+
+you implement a stack in java by: 
+
+### core functions:
+
+```java
+Deque<Integer> stack = new ArrayDeque<>();
+
+stack.push(3);
+stack.pop();
+stack.peep();
+
+stack.offerFirst(3); // inserts the element, and returns TRUE if it was successful. 
+                     // Push with a return;
+stack.pollFirst();   // removes and returns the top of the stack, returns null if empty. 
+                     // identical to pop, but safer
+stack.peekFirst();   // retrives, but does not remove, returns null if empty (identical to peek)
+
+stack.isEmpty();     // returns true if stack is empty.
+stack.size();        // returns the size of the stack.
+stack.clear();       // removes all the elements from the stack.
+stack.contains(e);   // returns true if the stack contains the element.
+stack.iterator();    // returns an iterator in proper LIFO sequence.
+
+```
+
+```java
+// Valid Parentheses
+// You are given a string s consisting of the following characters: '(', ')', '{', '}', '[' and ']'.
+// The input string s is valid if and only if:
+//     Every open bracket is closed by the same type of close bracket.
+//     Open brackets are closed in the correct order.
+//     Every close bracket has a corresponding open bracket of the same type.
+// Return true if s is a valid string, and false otherwise.
+
+class Solution {
+    public boolean isValid(String s) {
+        Deque<String> stack = new ArrayDeque<>();
+        for(int i=0; i<s.length(); i++) {
+            String cur = String.valueOf(s.charAt(i));
+            if (cur.equals("(") || cur.equals("{") || cur.equals("[")) {
+                stack.push(cur);
+            } else {
+                if (stack.isEmpty()) {
+                    return false;
+                }
+                String top = stack.pop(); 
+                
+                if (cur.equals(")") && !top.equals("(")) return false;
+                else if (cur.equals("}") && !top.equals("{")) return false;
+                else if (cur.equals("]") && !top.equals("[")) return false;
+            }
+        }
+
+        return stack.isEmpty();
+    }
+}
+
+```
+
+```java
+// Min Stack
+
+// Design a stack class that supports the push, pop, top, and getMin operations.
+//     MinStack() initializes the stack object.
+//     void push(int val) pushes the element val onto the stack.
+//     void pop() removes the element on the top of the stack.
+//     int top() gets the top element of the stack.
+//     int getMin() retrieves the minimum element in the stack.
+// Each function should run in O(1)O(1) time.
+
+class MinStack {
+    Deque<Integer> dataStack = new ArrayDeque<>();
+    Deque<Integer> minStack = new ArrayDeque<>();
+
+    public MinStack() {
+        
+    }
+    
+    public void push(int val) {
+        dataStack.push(val);
+        int currentMin = minStack.isEmpty() ? val : Math.min(val, minStack.peek());
+        minStack.push(currentMin);
+    }
+    
+    public void pop() {
+        dataStack.pop();
+        minStack.pop();
+    }
+    
+    public int top() {
+        return dataStack.peek();
+    }
+    
+    public int getMin() {
+        return minStack.peek();
+    }
+}
+```
+
+```java
+// Evaluate Reverse Polish Notation
+// You are given an array of strings tokens that represents a valid arithmetic expression in Reverse Polish Notation.
+// Return the integer that represents the evaluation of the expression.
+//     The operands may be integers or the results of other operations.
+//     The operators include '+', '-', '*', and '/'.
+//     Assume that division between integers always truncates toward zero.
+
+// Input: tokens = ["1","2","+","3","*","4","-"]
+// Output: 5
+// Explanation: ((1 + 2) * 3) - 4 = 5
+
+class Solution {
+    public int evalRPN(String[] tokens) {
+        Deque<Integer> stack = new ArrayDeque<>();
+
+        for(String s : tokens){
+            if(s.equals("+")){
+                stack.push(stack.pop()+stack.pop());
+            } else if(s.equals("-")){
+                int a = stack.pop();
+                int b = stack.pop();
+
+                stack.push(b-a);
+            } else if(s.equals("*")){
+                stack.push(stack.pop()*stack.pop());
+            } else if(s.equals("/")){
+                int c = stack.pop();
+                int d = stack.pop();
+                stack.push(d/c);
+            } else {
+                stack.push(Integer.parseInt(s));
+            }
+        }
+
+        return stack.peek();
+    }
+}
+```
+
+```java
+// Daily Temperatures
+// ou are given an array of integers temperatures where temperatures[i] represents the daily temperatures on the ith day.
+// Return an array result where result[i] is the number of days after the ith day before a warmer temperature appears on a future day. If there is no day in the future where a warmer temperature will appear for the ith day, set result[i] to 0 instead.
+
+class Solution {
+    public int[] dailyTemperatures(int[] temp) {
+        int n = temp.length;
+        int[] answer = new int[n];
+        Deque<Integer> stack = new ArrayDeque<>();
+
+        for (int i=0; i<n; i++) {
+            while (!stack.isEmpty() && temp[stack.peek()] < temp[i]) {
+                int prevIndex = stack.pop();
+                answer[prevIndex] = i - prevIndex;
+            }
+            stack.push(i);
+        }
+
+        return answer;
     }
 }
 ```
